@@ -104,7 +104,9 @@ def remove_workflow_from_object(obj):
         Django Model instance.
     """
     try:
-        wor = WorkflowObjectRelation.objects.get(content_type=obj)
+        ctype = ContentType.objects.get_for_model(obj)
+        wor = WorkflowObjectRelation.objects.get(content_type=ctype,
+                                                 content_id=obj.id)
     except WorkflowObjectRelation.DoesNotExist:
         pass
     else:
