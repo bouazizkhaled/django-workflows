@@ -45,6 +45,9 @@ class Workflow(models.Model):
     def __unicode__(self):
         return self.name
 
+    def __str__(self):
+        return self.name
+
     def get_initial_state(self):
         """Returns the initial state of the workflow. Takes the first one if
         no state has been defined.
@@ -166,6 +169,9 @@ class State(models.Model):
     def __unicode__(self):
         return "%s (%s)" % (self.name, self.workflow.name)
 
+    def __str__(self):
+        return "%s (%s)" % (self.name, self.workflow.name)
+
     def get_allowed_transitions(self, obj, user):
         """Returns all allowed transitions for passed object and user.
         """
@@ -225,6 +231,9 @@ class Transition(models.Model):
     def __unicode__(self):
         return self.name
 
+    def __self__(self):
+        return self.name
+
 
 class StateObjectRelation(models.Model):
     """Stores the workflow state of an object.
@@ -247,6 +256,9 @@ class StateObjectRelation(models.Model):
     state = models.ForeignKey(State, verbose_name=_(u"State"))
 
     def __unicode__(self):
+        return "%s %s - %s" % (self.content_type.name, self.content_id, self.state.name)
+
+    def __str__(self):
         return "%s %s - %s" % (self.content_type.name, self.content_id, self.state.name)
 
     class Meta:
@@ -282,6 +294,9 @@ class WorkflowObjectRelation(models.Model):
     def __unicode__(self):
         return "%s %s - %s" % (self.content_type.name, self.content_id, self.workflow.name)
 
+    def __str__(self):
+        return "%s %s - %s" % (self.content_type.name, self.content_id, self.workflow.name)
+
 
 class WorkflowModelRelation(models.Model):
     """Stores an workflow for a model (ContentType).
@@ -305,6 +320,9 @@ class WorkflowModelRelation(models.Model):
         app_label = "workflows"
 
     def __unicode__(self):
+        return "%s - %s" % (self.content_type.name, self.workflow.name)
+
+    def __str__(self):
         return "%s - %s" % (self.content_type.name, self.workflow.name)
 
 
@@ -332,6 +350,8 @@ class WorkflowPermissionRelation(models.Model):
     def __unicode__(self):
         return "%s %s" % (self.workflow.name, self.permission.name)
 
+    def __str__(self):
+        return "%s %s" % (self.workflow.name, self.permission.name)
 
 class StateInheritanceBlock(models.Model):
     """Stores inheritance block for state and permission.
@@ -355,6 +375,8 @@ class StateInheritanceBlock(models.Model):
     def __unicode__(self):
         return "%s %s" % (self.state.name, self.permission.name)
 
+    def __str__(self):
+        return "%s %s" % (self.state.name, self.permission.name)
 
 class StatePermissionRelation(models.Model):
     """Stores granted permission for state and role.
@@ -381,4 +403,7 @@ class StatePermissionRelation(models.Model):
         app_label = "workflows"
 
     def __unicode__(self):
+        return "%s %s %s" % (self.state.name, self.role.name, self.permission.name)
+
+    def __str__(self):
         return "%s %s %s" % (self.state.name, self.role.name, self.permission.name)
