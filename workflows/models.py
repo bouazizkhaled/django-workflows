@@ -39,7 +39,7 @@ class Workflow(models.Model):
         app_label = "workflows"
 
     name = models.CharField(_(u"Name"), max_length=100, unique=True)
-    initial_state = models.ForeignKey("State", verbose_name=_(u"Initial state"), related_name="workflow_state", blank=True, null=True)
+    initial_state = models.ForeignKey("State", on_delete=models.SET_NULL, verbose_name=_(u"Initial state"), related_name="workflow_state", blank=True, null=True)
     permissions = models.ManyToManyField(Permission, verbose_name=_(u"Permissions"), symmetrical=False, through="WorkflowPermissionRelation")
 
     def __unicode__(self):
@@ -159,7 +159,7 @@ class State(models.Model):
 
     """
     name = models.CharField(_(u"Name"), max_length=100)
-    workflow = models.ForeignKey(Workflow, verbose_name=_(u"Workflow"), related_name="states")
+    workflow = models.ForeignKey(Workflow, on_delete=models.SET_NULL, verbose_name=_(u"Workflow"), related_name="states")
     transitions = models.ManyToManyField("Transition", verbose_name=_(u"Transitions"), blank=True, related_name="states")
 
     class Meta:
@@ -220,10 +220,10 @@ class Transition(models.Model):
 
     """
     name = models.CharField(_(u"Name"), max_length=100)
-    workflow = models.ForeignKey(Workflow, verbose_name=_(u"Workflow"), related_name="transitions")
-    destination = models.ForeignKey(State, verbose_name=_(u"Destination"), null=True, blank=True, related_name="destination_state")
+    workflow = models.ForeignKey(Workflow, on_delete=models.SET_NULL, verbose_name=_(u"Workflow"), related_name="transitions")
+    destination = models.ForeignKey(State, on_delete=models.SET_NULL, verbose_name=_(u"Destination"), null=True, blank=True, related_name="destination_state")
     condition = models.CharField(_(u"Condition"), blank=True, max_length=100)
-    permission = models.ForeignKey(Permission, verbose_name=_(u"Permission"), blank=True, null=True)
+    permission = models.ForeignKey(Permission, on_delete=models.SET_NULL, verbose_name=_(u"Permission"), blank=True, null=True)
 
     class Meta:
         app_label = "workflows"
@@ -250,10 +250,10 @@ class StateObjectRelation(models.Model):
     state
         The state of content. This must be a State instance.
     """
-    content_type = models.ForeignKey(ContentType, verbose_name=_(u"Content type"), related_name="state_object", blank=True, null=True)
+    content_type = models.ForeignKey(ContentType, on_delete=models.SET_NULL, verbose_name=_(u"Content type"), related_name="state_object", blank=True, null=True)
     content_id = models.PositiveIntegerField(_(u"Content id"), blank=True, null=True)
     content = GenericForeignKey(ct_field="content_type", fk_field="content_id")
-    state = models.ForeignKey(State, verbose_name=_(u"State"))
+    state = models.ForeignKey(State, on_delete=models.SET_NULL, verbose_name=_(u"State"))
 
     def __unicode__(self):
         return "%s %s - %s" % (self.content_type.name, self.content_id, self.state.name)
@@ -282,10 +282,10 @@ class WorkflowObjectRelation(models.Model):
         The workflow which is assigned to an object. This needs to be a workflow
         instance.
     """
-    content_type = models.ForeignKey(ContentType, verbose_name=_(u"Content type"), related_name="workflow_object", blank=True, null=True)
+    content_type = models.ForeignKey(ContentType, on_delete=models.SET_NULL, verbose_name=_(u"Content type"), related_name="workflow_object", blank=True, null=True)
     content_id = models.PositiveIntegerField(_(u"Content id"), blank=True, null=True)
     content = GenericForeignKey(ct_field="content_type", fk_field="content_id")
-    workflow = models.ForeignKey(Workflow, verbose_name=_(u"Workflow"), related_name="wors")
+    workflow = models.ForeignKey(Workflow, on_delete=models.SET_NULL, verbose_name=_(u"Workflow"), related_name="wors")
 
     class Meta:
         app_label = "workflows"
@@ -313,8 +313,8 @@ class WorkflowModelRelation(models.Model):
         The workflow which is assigned to an object. This needs to be a
         workflow instance.
     """
-    content_type = models.ForeignKey(ContentType, verbose_name=_(u"Content Type"))
-    workflow = models.ForeignKey(Workflow, verbose_name=_(u"Workflow"), related_name="wmrs")
+    content_type = models.ForeignKey(ContentType, on_delete=models.SET_NULL, verbose_name=_(u"Content Type"))
+    workflow = models.ForeignKey(Workflow, on_delete=models.SET_NULL, verbose_name=_(u"Workflow"), related_name="wmrs")
 
     class Meta:
         app_label = "workflows"
@@ -340,8 +340,8 @@ class WorkflowPermissionRelation(models.Model):
         The permission for which the workflow is responsible. Needs to be a
         Permission instance.
     """
-    workflow = models.ForeignKey(Workflow)
-    permission = models.ForeignKey(Permission, related_name="permissions")
+    workflow = models.ForeignKey(Workflow, on_delete=models.SET_NULL)
+    permission = models.ForeignKey(Permission, on_delete=models.SET_NULL, related_name="permissions")
 
     class Meta:
         app_label = "workflows"
@@ -366,8 +366,8 @@ class StateInheritanceBlock(models.Model):
         The permission for which the instance is blocked. Needs to be a
         Permission instance.
     """
-    state = models.ForeignKey(State, verbose_name=_(u"State"))
-    permission = models.ForeignKey(Permission, verbose_name=_(u"Permission"))
+    state = models.ForeignKey(State, on_delete=models.SET_NULL, verbose_name=_(u"State"))
+    permission = models.ForeignKey(Permission, on_delete=models.SET_NULL, verbose_name=_(u"Permission"))
 
     class Meta:
         app_label = "workflows"
@@ -395,9 +395,9 @@ class StatePermissionRelation(models.Model):
         The role for which the state has the permission. Needs to be a lfc
         Role instance.
     """
-    state = models.ForeignKey(State, verbose_name=_(u"State"))
-    permission = models.ForeignKey(Permission, verbose_name=_(u"Permission"))
-    role = models.ForeignKey(Role, verbose_name=_(u"Role"))
+    state = models.ForeignKey(State, on_delete=models.SET_NULL, verbose_name=_(u"State"))
+    permission = models.ForeignKey(Permission, on_delete=models.SET_NULL, verbose_name=_(u"Permission"))
+    role = models.ForeignKey(Role, on_delete=models.SET_NULL, verbose_name=_(u"Role"))
 
     class Meta:
         app_label = "workflows"
